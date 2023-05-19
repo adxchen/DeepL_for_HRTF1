@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /mediawiki/index.php?
+Disallow: /mediawiki/index.php/Help
+Disallow: /mediawiki/index.php/MediaWiki
+Disallow: /mediawiki/index.php?title=Image
+Disallow: /mediawiki/index.php/Special:
+Disallow: /mediawiki/index.php/Talk:
+Disallow: /mediawiki/index.php/Template
+Disallow: /mediawiki/skins/
