@@ -108,3 +108,18 @@ print(len(sofa_finalset))
 print(len(imagesinfo_set))
 print(len(images_set))
 print(len(pinna_vals))
+
+images_set = [images_set[idx] for idx, val in enumerate(imagesinfo_set) if val is not None]
+pinna_vals = [pinna_vals[idx] for idx, val in enumerate(imagesinfo_set) if val is not None]
+imagesinfo_set = [imagesinfo_set[idx] for idx, val in enumerate(imagesinfo_set) if val is not None]
+
+print(len(sofa_finalset))
+print(len(imagesinfo_set))
+print(len(images_set))
+print(len(pinna_vals))
+
+impulse_vals = []
+for i, ear in imagesinfo_set:
+    impulse_vals.append(get_hrtf_sofa('data/sofacoustics.org/data/database/cipic', i).impulses[:,ear,:])
+get_hrtf_sofa('data/sofacoustics.org/data/database/cipic', i)
+print(impulse_vals)

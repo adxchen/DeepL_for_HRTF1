@@ -192,7 +192,7 @@ def get_hrtf_sofa(hrtf_folder, num):
             num_str = '0' + num_str
         if num < 10:
             num_str = '0' + num_str
-        CipicHRTF(hrtf_folder + '/subject_' + str(num_str) + '.sofa', 44100.0)
+        return CipicHRTF(hrtf_folder + '/subject_' + str(num_str) + '.sofa', 44100.0)
     except:
         print("get_hrtf_sofa的异常")
 
