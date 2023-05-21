@@ -186,12 +186,15 @@ def get_hrtf_mat(hrtf_folder, num):
 
 
 def get_hrtf_sofa(hrtf_folder, num):
-    num_str = str(num)
-    if num < 100:
-        num_str = '0' + num_str
-    if num < 10:
-        num_str = '0' + num_str
-    return CipicHRTF(hrtf_folder + '/subject_' + str(num_str) + '.sofa', 44100.0)
+    try:
+        num_str = str(num)
+        if num < 100:
+            num_str = '0' + num_str
+        if num < 10:
+            num_str = '0' + num_str
+        CipicHRTF(hrtf_folder + '/subject_' + str(num_str) + '.sofa', 44100.0)
+    except:
+        print("get_hrtf_sofa的异常")
 
 
 def create_cipic_hrtf(template_filename, filename, impulses, elevations, azimuths):
