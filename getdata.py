@@ -1,7 +1,9 @@
-# 获取HRTF文件中的数据
+# 该文件实现数据集的准备
+import keras
 import numpy as np
 import h5py
 from utils.hrtf import *
+from utils.image_utils import *
 import matplotlib.pyplot as plt
 
 hrtf = CipicHRTF('data/sofacoustics.org/data/database/cipic/subject_003.sofa', 44100.0)
@@ -113,13 +115,54 @@ images_set = [images_set[idx] for idx, val in enumerate(imagesinfo_set) if val i
 pinna_vals = [pinna_vals[idx] for idx, val in enumerate(imagesinfo_set) if val is not None]
 imagesinfo_set = [imagesinfo_set[idx] for idx, val in enumerate(imagesinfo_set) if val is not None]
 
-print(len(sofa_finalset))
+print("len of sofa_finalset:",len(sofa_finalset))
 print(len(imagesinfo_set))
 print(len(images_set))
 print(len(pinna_vals))
+print(np.array(pinna_vals).shape)
 
+# impulse_vals存放的是每个耳朵图片对应的hrir
+# 32*1250*200
 impulse_vals = []
 for i, ear in imagesinfo_set:
     impulse_vals.append(get_hrtf_sofa('data/sofacoustics.org/data/database/cipic', i).impulses[:,ear,:])
-get_hrtf_sofa('data/sofacoustics.org/data/database/cipic', i)
-print(impulse_vals)
+# (32, 1250, 200)
+# print(np.array(impulse_vals).shape)
+
+# 对耳朵图片进行边缘检测
+# 32*64*64*1
+valid_images_canny = []
+for i in images_set:
+    valid_images_canny.append(np.expand_dims(get_canny_image(i), axis=2))
+# (32, 64, 64, 1)
+# print(np.array(valid_images_canny).shape)
+
+elevation_vals = get_hrtf_sofa('data/sofacoustics.org/data/database/cipic', 3).elevations
+azimuths_vals = get_hrtf_sofa('data/sofacoustics.org/data/database/cipic', 3).azimuths
+
+# (1250,)
+# print(elevation_vals.shape)
+# print(azimuths_vals.shape)
+
+hrtf_dataset = []
+images_dataset = []
+hrtf_Y = []
+
+
+for idx, person in enumerate(np.array(impulse_vals)):
+    # idx = 0,1,...,31 person为每个hrir,shape为(1250,200)
+    for jdx, hrtf in enumerate(person):
+        # jdx = 0,1,...,1249  hrtf的shape为(200,)
+        # hstack：按顺序水平排列数组
+        # hrtf_dataset:三个字段，ele，azi，pinnas
+        hrtf_dataset.append(np.hstack((elevation_vals[jdx], azimuths_vals[jdx], pinna_vals[idx])))
+        images_dataset.append(valid_images_canny[idx])
+        hrtf_Y.append(hrtf)
+
+# (40000, 19) = (32*1250,1+1+17)
+hrtf_dataset = np.array(hrtf_dataset)
+# (40000,200)
+hrtf_Y = np.array(hrtf_Y)
+# (40000, 64, 64, 1)
+images_dataset = np.array(images_dataset)
+
